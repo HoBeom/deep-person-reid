@@ -1,0 +1,42 @@
+model:
+  name: 'osnet_x1_0'
+  pretrained: True
+
+data:
+  type: 'video'
+  # sources: ['dukemtmcvidreid']
+  sources: ['mars']
+  # sources: ['prid2011']
+  # targets: ['dukemtmcvidreid']
+  targets: ['mars']
+  # targets: ['prid2011']
+  height: 256
+  width: 128
+  combineall: False
+  transforms: ['random_flip']
+  # save_dir: 'log/osnet_x1_0_dukemtmcvidreid_softmax_cosinelr'
+  # save_dir: 'log/osnet_x1_0_mars_softmax_cosinelr'
+  save_dir: 'log/osnet_x1_0_prid2011_random_softmax_cosinelr'
+
+
+loss:
+  name: 'softmax'
+  softmax:
+    label_smooth: True
+
+train:
+  optim: 'amsgrad'
+  lr: 0.0025
+  max_epoch: 150
+  batch_size: 1
+  fixbase_epoch: 5
+  open_layers: ['classifier']
+  lr_scheduler: 'cosine'
+
+test:
+  batch_size: 1
+  dist_metric: 'euclidean'
+  normalize_feature: False
+  evaluate: False
+  eval_freq: 1
+  rerank: False

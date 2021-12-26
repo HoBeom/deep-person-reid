@@ -5,7 +5,8 @@ from .image import (
     Market1501, DukeMTMCreID, University1652, iLIDS
 )
 from .video import PRID2011, Mars, DukeMTMCVidReID, iLIDSVID
-from .dataset import Dataset, ImageDataset, VideoDataset
+from .video import MarsRL, DukeMTMCVidReIDRL
+from .dataset import Dataset, ImageDataset, VideoDataset, VideoRLDataset
 
 __image_datasets = {
     'market1501': Market1501,
@@ -31,6 +32,12 @@ __video_datasets = {
 }
 
 
+__video_rl_datasets = {
+    'mars': MarsRL,
+    'dukemtmcvidreid': DukeMTMCVidReIDRL
+}
+
+
 def init_image_dataset(name, **kwargs):
     """Initializes an image dataset."""
     avai_datasets = list(__image_datasets.keys())
@@ -52,6 +59,16 @@ def init_video_dataset(name, **kwargs):
         )
     return __video_datasets[name](**kwargs)
 
+
+def init_video_rl_dataset(name, **kwargs):
+    """Initializes a video dataset."""
+    avai_datasets = list(__video_rl_datasets.keys())
+    if name not in avai_datasets:
+        raise ValueError(
+            'Invalid dataset name. Received "{}", '
+            'but expected to be one of {}'.format(name, avai_datasets)
+        )
+    return __video_rl_datasets[name](**kwargs)
 
 def register_image_dataset(name, dataset):
     """Registers a new image dataset.
@@ -117,3 +134,36 @@ def register_video_dataset(name, dataset):
             'another name excluding {}'.format(curr_datasets)
         )
     __video_datasets[name] = dataset
+
+
+def register_video_rl_dataset(name, dataset):
+    """Registers a new video dataset.
+
+    Args:
+        name (str): key corresponding to the new dataset.
+        dataset (Dataset): the new dataset class.
+
+    Examples::
+        
+        import torchreid
+        import NewDataset
+        torchreid.data.register_video_dataset('new_dataset', NewDataset)
+        # single dataset case
+        datamanager = torchreid.data.VideoDataManager(
+            root='reid-data',
+            sources='new_dataset'
+        )
+        # multiple dataset case
+        datamanager = torchreid.data.VideoDataManager(
+            root='reid-data',
+            sources=['new_dataset', 'ilidsvid']
+        )
+    """
+    global __video_rl_datasets
+    curr_datasets = list(__video_rl_datasets.keys())
+    if name in curr_datasets:
+        raise ValueError(
+            'The given name already exists, please choose '
+            'another name excluding {}'.format(curr_datasets)
+        )
+    __video_rl_datasets[name] = dataset
